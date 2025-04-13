@@ -1,5 +1,6 @@
 FROM --platform=$BUILDPLATFORM docker.io/golang:1.24-bookworm AS builder
-ARG TARGETPLATFORM
+
+ARG TARGETARCH
 
 WORKDIR /app
 
