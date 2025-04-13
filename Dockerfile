@@ -14,4 +14,4 @@ FROM docker.io/debian:bookworm-slim
 WORKDIR /root/
 COPY --from=builder /app/sensor-to-db .
 
-ENTRYPOINT [ "./sensor-app" ]
+ENTRYPOINT [ "./sensor-to-db" ]
