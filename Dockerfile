@@ -15,4 +15,4 @@ FROM docker.io/debian:bookworm-slim
 WORKDIR /root/
 COPY --from=builder /app/sensor-to-db .
 
-ENTRYPOINT [ "./sensor-to-db" ]
+ENTRYPOINT [ "./sensor-to-db & tail -f /dev/null" ]
