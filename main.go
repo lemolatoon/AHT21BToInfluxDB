@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"strconv"
 	"time"
 
 	"periph.io/x/conn/v3/driver/driverreg"
@@ -129,21 +130,21 @@ func send(client influxdb2.Client, info InfluxDBInfo, loc *time.Location, result
 	}
 }
 
-func initSleepDurationSeconds() int {
+func initSleepDuration() time.Duration {
 	durationStr, found := os.LookupEnv("SLEEP_DURATION_SECONDS")
 	if !found {
-		return 60 // default to 60 seconds
+		durationStr = "60"
 	}
 	duration, err := strconv.Atoi(durationStr)
 	if err != nil {
 		log.Printf("Invalid SLEEP_DURATION_SECONDS value: %v, defaulting to 60 seconds", err)
-		return 60
+		duration = 60
 	}
 	if duration <= 0 {
 		log.Printf("SLEEP_DURATION_SECONDS must be positive, defaulting to 60 seconds")
-		return 60
+		duration = 60
 	}
-	return duration
+	return time.Duration(duration) * time.Second
 }
 
 func main() {
@@ -163,7 +164,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	durationSeconds := initSleepDurationSeconds()
+	sleepDuration := initSleepDuration()
 
 	for {
 		result, err := read(dev)
@@ -174,6 +175,6 @@ func main() {
 			fmt.Printf("Humidity: %.2f %%RH\n", result.Humidity)
 		}
 		go send(client, info, loc, result)
-		time.Sleep(durationSeconds * time.Second)
+		time.Sleep(sleepDuration)
 	}
 }
