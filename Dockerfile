@@ -15,5 +15,5 @@ FROM docker.io/debian:bookworm-slim
 WORKDIR /root/
 COPY --from=builder /app/sensor-to-db .
 
-ENTRYPOINT ["/bin/sh", "-c", "./sensor-to-db & tail -f /dev/null"]
+ENTRYPOINT ["/bin/sh", "-c", "./sensor-to-db & while true; do sleep 1; done"]
 
