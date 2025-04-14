@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: influxdb
+  namespace: sensor-home
+  labels:
+    app: influxdb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: influxdb
+  serviceName: influxdb
+  template:
+    metadata:
+      labels:
+        app: influxdb
+    spec:
+      containers:
+        - name: influxdb 
+          image: influxdb:2.7
+          ports:
+            - containerPort: 8086
+              name: influxdb
+          volumeMounts:
+            - mountPath: /var/lib/influxdb2
+              name: data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: influxdb-pvc  
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: influxdb-pvc
+  namespace: sensor-home
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+  storageClassName: local-path
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: influxdb
+    namespace: sensor-home
+spec:
+    ports:
+      - name: influxdb
+        port: 8086
+        targetPort: 8086
+    selector:
+        app: influxdb

@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aht21b
+  namespace: sensor-home
+  labels:
+    app: aht21b
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: aht21b
+  template:
+    metadata:
+      labels:
+        app: aht21b
+    spec:
+      nodeName: ubuntu # rasberry pi node name
+      containers:
+        - name: aht21b
+          image: ghcr.io/lemolatoon/aht21btoinfluxdb:master
+          securityContext:
+            privileged: true
+          imagePullPolicy: Always
+          env:
+            - name: INFLUXDB_URL
+              value: "http://influxdb:8086"
+            - name: INFLUXDB_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: influxdb-secret
+                  key: INFLUXDB_TOKEN
+            - name: INFLUXDB_ORG
+              value: "lemolatoon"
+            - name: INFLUXDB_BUCKET
+              value: "sensor-home"
+          volumeMounts:
+            - name: i2c-dev
+              mountPath: /dev/i2c-1
+      volumes:
+        - name: i2c-dev
+          hostPath:
+            path: /dev/i2c-1
+            type: CharDevice
