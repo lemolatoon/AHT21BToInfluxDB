@@ -15,13 +15,13 @@ I2C 接続の AHT21B センサーから温度・湿度を取得して、InfluxDB
 - `SLEEP_DURATION_SECONDS` (省略可): センサー読み取りの間隔（秒単位）。デフォルトは `60`
 
 ## コンテナイメージ
-コンテナは、[https://github.com/lemolatoon/AHT21BToInfluxDB/pkgs/container/aht21btoinfluxdb](ここ)で公開されています。
+コンテナは、[ここ](https://github.com/lemolatoon/AHT21BToInfluxDB/pkgs/container/aht21btoinfluxdb)で公開されています。
 `ghcr.io/lemolatoon/aht21btoinfluxdb:master`が最新です。
 
 ## Kubernetes へのデプロイ
 Kubernetes 上で動かす場合は、`example-manifests` フォルダに実際に自分が運用している際のyamlがおいてあります。
 
-PVCには、[https://github.com/rancher/local-path-provisioner](local-path-provioner)を、Ingressには、[https://github.com/STRRL/cloudflare-tunnel-ingress-controller](cloudflare-tunnel-ingress-controller)を使っています。
+PVCには、[local-path-provioner](https://github.com/rancher/local-path-provisioner)を、Ingressには、[cloudflare-tunnel-ingress-controller](https://github.com/STRRL/cloudflare-tunnel-ingress-controller)を使っています。
 ```sh
 kubectl apply -f example-manifests/aht21b.yaml
 kubectl apply -f example-manifests/influxdb.yaml
