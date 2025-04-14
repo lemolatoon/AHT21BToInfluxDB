@@ -129,6 +129,23 @@ func send(client influxdb2.Client, info InfluxDBInfo, loc *time.Location, result
 	}
 }
 
+func initSleepDurationSeconds() int {
+	durationStr, found := os.LookupEnv("SLEEP_DURATION_SECONDS")
+	if !found {
+		return 60 // default to 60 seconds
+	}
+	duration, err := strconv.Atoi(durationStr)
+	if err != nil {
+		log.Printf("Invalid SLEEP_DURATION_SECONDS value: %v, defaulting to 60 seconds", err)
+		return 60
+	}
+	if duration <= 0 {
+		log.Printf("SLEEP_DURATION_SECONDS must be positive, defaulting to 60 seconds")
+		return 60
+	}
+	return duration
+}
+
 func main() {
 	dev, closer, err := initDevice()
 	if err != nil {
@@ -146,6 +163,8 @@ func main() {
 		log.Fatal(err)
 	}
 
+	durationSeconds := initSleepDurationSeconds()
+
 	for {
 		result, err := read(dev)
 		if err != nil {
@@ -155,7 +174,6 @@ func main() {
 			fmt.Printf("Humidity: %.2f %%RH\n", result.Humidity)
 		}
 		go send(client, info, loc, result)
-		// sleep for 5 second
-		time.Sleep(5 * time.Second)
+		time.Sleep(durationSeconds * time.Second)
 	}
 }

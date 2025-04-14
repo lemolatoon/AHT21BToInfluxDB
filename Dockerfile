@@ -8,12 +8,12 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
-RUN CGO_ENABLED=0 GOARCH=${TARGETARCH} GOOS=linux go build -o sensor-to-db
+RUN CGO_ENABLED=0 GOARCH=${TARGETARCH} GOOS=linux go build -ldflags="-s -w" -o sensor-to-db
 
 FROM docker.io/debian:bookworm-slim
 
 WORKDIR /root/
 COPY --from=builder /app/sensor-to-db .
 
-ENTRYPOINT ["/bin/sh", "-c", "./sensor-to-db & while true; do sleep 1; done"]
+ENTRYPOINT [ "./sensor-to-db" ]
 
